@@ -1,22 +1,24 @@
+// api/fetch.js - Updated with CORS support
 const axios = require('axios');
 
 module.exports = async (req, res) => {
-  // Enable CORS
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+  // ----- 1. SET CORS HEADERS -----
+  // Allow your frontend origin
+  const allowedOrigin = 'https://bid-monitor.vercel.app';
+  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Max-Age', '86400'); // Cache for 24 hours
 
-  // Handle preflight
+  // ----- 2. HANDLE PREFLIGHT OPTIONS REQUESTS -----
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // Homepage route
-  if (req.method === 'GET' && req.url === '/') {
+  // ----- 3. ORIGINAL API LOGIC (from here down) -----
+  // Homepage route for GET requests to /api/fetch
+  if (req.method === 'GET') {
     return res.status(200).json({
       status: 'online',
       service: 'BidMonitor API',
@@ -25,7 +27,7 @@ module.exports = async (req, res) => {
     });
   }
 
-  // Only accept POST for fetching
+  // Only accept POST for fetching URLs
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed. Use POST.' });
   }
