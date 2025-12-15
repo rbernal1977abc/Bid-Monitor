@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BidMonitor - Live Government Bidding Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <i class="fas fa-search-dollar"></i>
+                <div>
+                    <h1>BidMonitor</h1>
+                    <p class="subtitle">Live Government Bidding Tracker</p>
+                </div>
+            </div>
+            <div class="nav-links">
+                <button class="btn btn-sm btn-outline" id="helpBtn">
+                    <i class="fas fa-question-circle"></i> Help
+                </button>
+                <button class="btn btn-sm btn-outline" id="settingsBtn">
+                    <i class="fas fa-cog"></i> Settings
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h2>Monitor Any Government Bidding Website</h2>
+                <p>Enter any government bidding website URL to monitor for new opportunities. Supports websites requiring login.</p>
+                <div class="hero-badges">
+                    <span class="badge"><i class="fas fa-check"></i> No Scraping</span>
+                    <span class="badge"><i class="fas fa-check"></i> User-Provided URLs</span>
+                    <span class="badge"><i class="fas fa-check"></i> Secure</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Configuration Card -->
+        <section class="card config-card">
+            <div class="card-header">
+                <h3><i class="fas fa-cog"></i> Configuration</h3>
+                <div class="card-status">
+                    <span class="status-dot" id="globalStatusDot"></span>
+                    <span id="globalStatusText">Ready</span>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <!-- Website Input -->
+                <div class="form-group">
+                    <label for="targetUrl" class="required">
+                        <i class="fas fa-link"></i> Target Website URL
+                    </label>
+                    <div class="input-with-examples">
+                        <input type="url" 
+                               id="targetUrl" 
+                               placeholder="https://example.gov.ph/tenders"
+                               autocomplete="off"
+                               spellcheck="false">
+                        <div class="examples">
+                            <small>Examples: </small>
+                            <button type="button" class="example-btn" data-url="https://notices.philgeps.gov.ph">PhilGEPS</button>
+                            <button type="button" class="example-btn" data-url="https://www.dbm.gov.ph">DBM</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Login Credentials Section -->
+                <div class="form-section">
+                    <button type="button" class="section-toggle" id="loginToggle">
+                        <i class="fas fa-key"></i>
+                        <span>Login Credentials (Optional)</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </button>
+                    <div class="section-content" id="loginSection">
+                        <div class="form-group">
+                            <label for="loginUrl">Login Page URL (if different)</label>
+                            <input type="url" id="loginUrl" placeholder="https://example.gov.ph/login">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="username">Username/Email</label>
+                                <input type="text" id="username" placeholder="Your username">
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <div class="password-wrapper">
+                                    <input type="password" id="password" placeholder="Your password">
+                                    <button type="button" class="toggle-password" id="togglePassword">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-note">
+                            <i class="fas fa-info-circle"></i>
+                            Credentials are used temporarily and never stored on our servers.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Parameters -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <i class="fas fa-search"></i>
+                        <h4>Search Parameters</h4>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="keywords">
+                                <i class="fas fa-filter"></i> Keywords to Monitor
+                            </label>
+                            <input type="text" 
+                                   id="keywords" 
+                                   placeholder="bid, tender, RFP, procurement"
+                                   title="Comma-separated keywords">
+                            <small class="hint">Comma-separated list (optional)</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="frequency">
+                                <i class="fas fa-clock"></i> Check Frequency
+                            </label>
+                            <select id="frequency">
+                                <option value="60000">Every minute (testing)</option>
+                                <option value="3600000">Every hour</option>
+                                <option value="21600000">Every 6 hours</option>
+                                <option value="86400000">Every day</option>
+                                <option value="0">Manual only</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" id="testBtn">
+                        <i class="fas fa-vial"></i> Test Connection
+                    </button>
+                    <button class="btn btn-primary" id="monitorBtn">
+                        <i class="fas fa-play"></i> Start Monitoring
+                    </button>
+                    <button class="btn btn-danger" id="stopBtn" disabled>
+                        <i class="fas fa-stop"></i> Stop
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Card -->
+        <section class="card results-card">
+            <div class="card-header">
+                <h3><i class="fas fa-list-alt"></i> Live Results</h3>
+                <div class="card-actions">
+                    <div class="last-check">
+                        <i class="fas fa-sync-alt"></i>
+                        <span id="lastCheckTime">Never</span>
+                    </div>
+                    <div class="result-count">
+                        <i class="fas fa-file-contract"></i>
+                        <span id="resultCount">0</span> found
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <!-- Statistics -->
+                <div class="stats-grid" id="statsContainer">
+                    <div class="stat-item">
+                        <div class="stat-icon" style="background: #3498db20; color: #3498db;">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="websiteCount">0</span>
+                            <span class="stat-label">Websites</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon" style="background: #2ecc7120; color: #2ecc71;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="successCount">0</span>
+                            <span class="stat-label">Successful</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon" style="background: #f39c1220; color: #f39c12;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="errorCount">0</span>
+                            <span class="stat-label">Errors</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon" style="background: #9b59b620; color: #9b59b6;">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="uptimePercent">100%</span>
+                            <span class="stat-label">Uptime</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Container -->
+                <div id="resultsContainer">
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h4>No Results Yet</h4>
+                        <p>Configure a website and start monitoring to see live bidding opportunities.</p>
+                        <div class="empty-actions">
+                            <button class="btn btn-sm btn-outline" onclick="tryExample()">
+                                <i class="fas fa-magic"></i> Try Example
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Controls -->
+                <div class="results-controls" id="resultsControls" style="display: none;">
+                    <div class="controls-left">
+                        <button class="btn btn-sm btn-outline" id="exportBtn">
+                            <i class="fas fa-download"></i> Export CSV
+                        </button>
+                        <button class="btn btn-sm btn-outline" id="copyBtn">
+                            <i class="fas fa-copy"></i> Copy Results
+                        </button>
+                    </div>
+                    <div class="controls-right">
+                        <button class="btn btn-sm btn-danger" id="clearBtn">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Website List -->
+        <section class="card websites-card">
+            <div class="card-header">
+                <h3><i class="fas fa-bookmark"></i> Saved Websites</h3>
+                <button class="btn btn-sm btn-outline" id="addWebsiteBtn">
+                    <i class="fas fa-plus"></i> Add Current
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="websitesList" class="websites-list">
+                    <div class="empty-websites">
+                        <i class="fas fa-bookmark"></i>
+                        <p>No saved websites yet</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h4>BidMonitor</h4>
+                    <p>Live Government Bidding Tracker</p>
+                    <p class="disclaimer">
+                        <i class="fas fa-shield-alt"></i>
+                        This tool requires user-provided URLs and credentials. 
+                        It does not scrape, store, or share any data.
+                    </p>
+                </div>
+                <div class="footer-links">
+                    <a href="#" id="privacyLink">Privacy</a>
+                    <a href="#" id="termsLink">Terms</a>
+                    <a href="#" id="reportLink">Report Issue</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 BidMonitor. Open Source Project.</p>
+                <div class="footer-tech">
+                    <span class="tech-badge">Node.js</span>
+                    <span class="tech-badge">Vercel</span>
+                    <span class="tech-badge">GitHub Pages</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <div class="modal" id="helpModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-question-circle"></i> Help & Usage</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h4>How to Use</h4>
+                <ol>
+                    <li>Enter a government bidding website URL</li>
+                    <li>Add login credentials if required</li>
+                    <li>Set keywords and frequency</li>
+                    <li>Click "Start Monitoring"</li>
+                </ol>
+                <h4>Features</h4>
+                <ul>
+                    <li>✅ Works with any government website</li>
+                    <li>✅ Supports login-required sites</li>
+                    <li>✅ No data storage on our servers</li>
+                    <li>✅ Real-time monitoring</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
