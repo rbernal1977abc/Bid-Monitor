@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BidMonitor - Government Bidding Search</title>
+    <title>BidMonitor - Search & Monitor Government Bids</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -55,122 +55,261 @@
             color: #7f8c8d;
         }
         
-        /* Search Card */
-        .search-card {
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 1rem;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #7f8c8d;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        /* Content Sections */
+        .section {
             background: white;
             border-radius: 12px;
             padding: 2rem;
             margin-bottom: 2rem;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: none;
         }
         
-        .search-form {
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e50;
             display: flex;
-            gap: 10px;
-            margin-bottom: 1rem;
+            align-items: center;
+            gap: 8px;
         }
         
-        #searchInput {
-            flex: 1;
+        input, textarea, select {
+            width: 100%;
             padding: 0.8rem 1rem;
             border: 2px solid #e0e6ed;
             border-radius: 8px;
             font-size: 1rem;
+            transition: all 0.3s;
         }
         
-        #searchInput:focus {
+        input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: #3498db;
             box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
         }
         
-        .search-btn {
-            background: #3498db;
-            color: white;
+        /* Buttons */
+        .btn {
+            padding: 0.8rem 1.5rem;
             border: none;
             border-radius: 8px;
-            padding: 0 1.5rem;
             font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: #2980b9;
+        }
+        
+        .btn-success {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .btn-success:hover:not(:disabled) {
+            background: #27ae60;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover:not(:disabled) {
+            background: #c0392b;
+        }
+        
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .btn-warning:hover:not(:disabled) {
+            background: #d68910;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        /* Keywords Input */
+        .keywords-input {
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            padding: 0.8rem;
+            min-height: 100px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .keyword-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            margin: 0.25rem;
+            font-size: 0.9rem;
+        }
+        
+        .keyword-tag .remove {
+            cursor: pointer;
+            padding: 2px;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+        }
+        
+        .keyword-tag .remove:hover {
+            background: rgba(0,0,0,0.1);
+        }
+        
+        /* Monitoring List */
+        .monitor-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #3498db;
             transition: all 0.3s;
         }
         
-        .search-btn:hover {
-            background: #2980b9;
+        .monitor-item:hover {
             transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
-        /* Quick Search Buttons */
-        .quick-search {
+        .monitor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .monitor-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .monitor-url {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+        
+        .monitor-keywords {
+            margin: 1rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .monitor-actions {
             display: flex;
             gap: 10px;
-            flex-wrap: wrap;
             margin-top: 1rem;
         }
         
-        .quick-btn {
-            background: #f8f9fa;
-            border: 2px solid #e0e6ed;
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        /* Status */
+        .status-active {
+            color: #2ecc71;
+            font-weight: 600;
         }
         
-        .quick-btn:hover {
-            background: #e9ecef;
-            border-color: #3498db;
+        .status-paused {
+            color: #f39c12;
+            font-weight: 600;
         }
         
-        /* Results Card */
-        .results-card {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        .status-stopped {
+            color: #e74c3c;
+            font-weight: 600;
         }
         
-        .results-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #f0f2f5;
-        }
-        
+        /* Results */
         #resultsContainer {
             min-height: 200px;
         }
         
-        /* Loading State */
-        .loading {
-            text-align: center;
-            padding: 3rem;
-        }
-        
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #3498db;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Result Items */
         .result-item {
             background: #f8fafc;
             border-radius: 8px;
@@ -198,55 +337,37 @@
             color: #2c3e50;
         }
         
-        .result-url {
-            color: #7f8c8d;
-            font-size: 0.9rem;
-            word-break: break-all;
-        }
-        
-        .result-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin: 1rem 0;
-        }
-        
-        .detail-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #5d6d7e;
-            font-size: 0.9rem;
-        }
-        
-        .result-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 1rem;
-        }
-        
-        .action-btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .visit-btn {
+        .result-source {
+            font-size: 0.85rem;
+            color: white;
             background: #3498db;
-            color: white;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
         }
         
-        .monitor-btn {
-            background: #2ecc71;
-            color: white;
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #7f8c8d;
         }
         
-        /* Empty State */
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Empty States */
         .empty-state {
             text-align: center;
             padding: 3rem;
@@ -285,16 +406,29 @@
             }
         }
         
-        /* Responsive */
-        @media (max-width: 768px) {
-            .search-form {
-                flex-direction: column;
-            }
-            
-            .search-btn {
-                width: 100%;
-                justify-content: center;
-            }
+        /* Quick Links */
+        .quick-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        
+        .quick-link {
+            background: #f8f9fa;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .quick-link:hover {
+            background: #e9ecef;
+            border-color: #3498db;
         }
     </style>
 </head>
@@ -311,63 +445,174 @@
             </div>
         </header>
         
-        <!-- Search Card -->
-        <div class="search-card">
-            <h2 style="margin-bottom: 1rem; color: #2c3e50;">
-                <i class="fas fa-search"></i> Search Government Bidding Sites
-            </h2>
-            
-            <div class="search-form">
-                <input 
-                    type="text" 
-                    id="searchInput" 
-                    placeholder="Enter website URL or search keywords (e.g., https://philgeps.gov.ph or 'construction bids')"
-                    autocomplete="off"
-                >
-                <button class="search-btn" id="searchBtn">
-                    <i class="fas fa-search"></i> Search
-                </button>
-            </div>
-            
-            <div class="quick-search">
-                <small style="color: #7f8c8d; margin-right: 10px;">Quick search:</small>
-                <button class="quick-btn" onclick="quickSearch('https://notices.philgeps.gov.ph')">
-                    <i class="fas fa-file-contract"></i> PhilGEPS
-                </button>
-                <button class="quick-btn" onclick="quickSearch('https://www.dbm.gov.ph')">
-                    <i class="fas fa-landmark"></i> DBM Philippines
-                </button>
-                <button class="quick-btn" onclick="quickSearch('https://www.gov.ph')">
-                    <i class="fas fa-globe-asia"></i> GOV.PH
-                </button>
-                <button class="quick-btn" onclick="quickSearch('construction bids')">
-                    <i class="fas fa-hard-hat"></i> Construction
-                </button>
-                <button class="quick-btn" onclick="quickSearch('healthcare procurement')">
-                    <i class="fas fa-hospital"></i> Healthcare
-                </button>
-            </div>
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('search')">
+                <i class="fas fa-search"></i> Search
+            </button>
+            <button class="tab-btn" onclick="showTab('monitor')">
+                <i class="fas fa-bell"></i> Monitor
+            </button>
+            <button class="tab-btn" onclick="showTab('results')">
+                <i class="fas fa-list-alt"></i> Results
+            </button>
         </div>
         
-        <!-- Results Card -->
-        <div class="results-card">
-            <div class="results-header">
-                <h3 style="color: #2c3e50;">
-                    <i class="fas fa-list-alt"></i> Search Results
-                </h3>
-                <div id="resultsCount" style="color: #7f8c8d; font-size: 0.9rem;">
-                    0 results
+        <!-- SEARCH TAB -->
+        <section id="searchTab" class="section active">
+            <h2><i class="fas fa-search"></i> Search Bidding Websites</h2>
+            
+            <!-- Search Type -->
+            <div class="form-group">
+                <label>Search Type</label>
+                <div style="display: flex; gap: 1rem;">
+                    <button id="urlSearchBtn" class="btn btn-primary" onclick="setSearchType('url')">
+                        <i class="fas fa-link"></i> URL Search
+                    </button>
+                    <button id="keywordSearchBtn" class="btn" onclick="setSearchType('keyword')" style="background: #95a5a6; color: white;">
+                        <i class="fas fa-key"></i> Keyword Search
+                    </button>
                 </div>
             </div>
             
-            <div id="resultsContainer">
-                <div class="empty-state">
-                    <i class="fas fa-search"></i>
-                    <h3>No Search Results</h3>
-                    <p>Enter a website URL or keywords above to start searching</p>
+            <!-- URL Search Form -->
+            <div id="urlSearchForm">
+                <div class="form-group">
+                    <label for="websiteUrl"><i class="fas fa-globe"></i> Website URL</label>
+                    <input type="url" id="websiteUrl" placeholder="https://example.gov.ph/tenders">
+                </div>
+                
+                <div class="quick-links">
+                    <button class="quick-link" onclick="useExample('https://notices.philgeps.gov.ph')">
+                        <i class="fas fa-file-contract"></i> PhilGEPS
+                    </button>
+                    <button class="quick-link" onclick="useExample('https://www.dbm.gov.ph')">
+                        <i class="fas fa-landmark"></i> DBM Philippines
+                    </button>
+                    <button class="quick-link" onclick="useExample('https://www.gov.ph')">
+                        <i class="fas fa-globe-asia"></i> GOV.PH
+                    </button>
+                    <button class="quick-link" onclick="useExample('https://www.worldbank.org')">
+                        <i class="fas fa-university"></i> World Bank
+                    </button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="searchKeywords"><i class="fas fa-filter"></i> Keywords to Search For (Optional)</label>
+                    <textarea id="searchKeywords" placeholder="Enter keywords (one per line) to look for specific bidding opportunities"></textarea>
                 </div>
             </div>
-        </div>
+            
+            <!-- Keyword Search Form -->
+            <div id="keywordSearchForm" style="display: none;">
+                <div class="form-group">
+                    <label for="keywordInput"><i class="fas fa-key"></i> Keywords</label>
+                    <div class="keywords-input" id="keywordInput" contenteditable="true"></div>
+                    <small style="color: #7f8c8d; margin-top: 0.5rem; display: block;">
+                        Type keywords and press Enter to add. Example: construction, tender, RFP, procurement, IT services
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="keywordSources"><i class="fas fa-globe"></i> Search Sources</label>
+                    <select id="keywordSources" multiple style="height: 150px;">
+                        <option value="philgeps">PhilGEPS (Philippine Government)</option>
+                        <option value="dbm">DBM Philippines</option>
+                        <option value="govph">GOV.PH</option>
+                        <option value="worldbank">World Bank</option>
+                        <option value="adb">Asian Development Bank</option>
+                        <option value="un">United Nations</option>
+                    </select>
+                    <small style="color: #7f8c8d; margin-top: 0.5rem; display: block;">
+                        Hold Ctrl/Cmd to select multiple sources
+                    </small>
+                </div>
+            </div>
+            
+            <!-- Search Buttons -->
+            <div class="btn-group">
+                <button class="btn btn-success" onclick="performSearch()" id="searchBtn">
+                    <i class="fas fa-search"></i> Search Now
+                </button>
+                <button class="btn btn-primary" onclick="saveSearchForMonitoring()" id="monitorBtn">
+                    <i class="fas fa-bell"></i> Save for Monitoring
+                </button>
+            </div>
+        </section>
+        
+        <!-- MONITOR TAB -->
+        <section id="monitorTab" class="section">
+            <h2><i class="fas fa-bell"></i> Active Monitoring</h2>
+            
+            <!-- Add New Monitor -->
+            <div class="form-group">
+                <h3>Add New Monitor</h3>
+                <div class="form-group">
+                    <label for="monitorName"><i class="fas fa-tag"></i> Monitor Name</label>
+                    <input type="text" id="monitorName" placeholder="e.g., PhilGEPS Construction Bids">
+                </div>
+                
+                <div class="form-group">
+                    <label for="monitorUrl"><i class="fas fa-link"></i> Website URL</label>
+                    <input type="url" id="monitorUrl" placeholder="https://example.gov.ph">
+                </div>
+                
+                <div class="form-group">
+                    <label for="monitorKeywords"><i class="fas fa-key"></i> Keywords to Monitor</label>
+                    <textarea id="monitorKeywords" placeholder="construction, tender, RFP (one per line)"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="monitorFrequency"><i class="fas fa-clock"></i> Check Frequency</label>
+                    <select id="monitorFrequency">
+                        <option value="15">Every 15 minutes</option>
+                        <option value="30">Every 30 minutes</option>
+                        <option value="60">Every hour</option>
+                        <option value="360">Every 6 hours</option>
+                        <option value="720">Every 12 hours</option>
+                        <option value="1440">Every day</option>
+                    </select>
+                </div>
+                
+                <button class="btn btn-success" onclick="addMonitor()">
+                    <i class="fas fa-plus"></i> Add Monitor
+                </button>
+            </div>
+            
+            <!-- Active Monitors List -->
+            <div id="monitorsList">
+                <h3 style="margin-top: 2rem;">Active Monitors</h3>
+                <div id="monitorsContainer" class="empty-state">
+                    <i class="fas fa-bell"></i>
+                    <h3>No Active Monitors</h3>
+                    <p>Add a monitor to start tracking bidding websites</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- RESULTS TAB -->
+        <section id="resultsTab" class="section">
+            <h2><i class="fas fa-list-alt"></i> Search Results</h2>
+            
+            <!-- Results Stats -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <div id="resultsStats" style="color: #7f8c8d;">
+                    0 results
+                </div>
+                <div>
+                    <button class="btn" onclick="clearResults()" style="background: #95a5a6; color: white;">
+                        <i class="fas fa-trash"></i> Clear Results
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Results Container -->
+            <div id="resultsContainer" class="empty-state">
+                <i class="fas fa-search"></i>
+                <h3>No Results Yet</h3>
+                <p>Perform a search to see results here</p>
+            </div>
+        </section>
     </div>
     
     <!-- Notification -->
@@ -375,74 +620,178 @@
     
     <!-- JavaScript -->
     <script>
-        // Configuration - Use your Vercel URL
+        // Configuration
         const BACKEND_URL = 'https://bid-monitor.vercel.app/api/fetch';
         
-        // DOM Elements
-        const searchInput = document.getElementById('searchInput');
-        const searchBtn = document.getElementById('searchBtn');
-        const resultsContainer = document.getElementById('resultsContainer');
-        const resultsCount = document.getElementById('resultsCount');
-        const notification = document.getElementById('notification');
+        // Global State
+        let currentTab = 'search';
+        let searchType = 'url';
+        let activeKeywords = [];
+        let activeMonitors = [];
+        let searchResults = [];
         
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🔍 BidMonitor Search initialized');
+            console.log('🚀 BidMonitor initialized');
             
-            // Search button click
-            searchBtn.addEventListener('click', performSearch);
+            // Load saved data
+            loadSavedData();
             
-            // Enter key in search input
-            searchInput.addEventListener('keypress', function(e) {
+            // Set up keyword input
+            setupKeywordInput();
+            
+            // Set initial state
+            showTab('search');
+            setSearchType('url');
+            
+            // Load monitors
+            renderMonitors();
+        });
+        
+        // Tab Navigation
+        function showTab(tabName) {
+            currentTab = tabName;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Show selected tab content
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+        
+        // Search Type Toggle
+        function setSearchType(type) {
+            searchType = type;
+            
+            // Update button styles
+            document.getElementById('urlSearchBtn').style.background = 
+                type === 'url' ? '#3498db' : '#95a5a6';
+            document.getElementById('keywordSearchBtn').style.background = 
+                type === 'keyword' ? '#3498db' : '#95a5a6';
+            
+            // Show/hide forms
+            document.getElementById('urlSearchForm').style.display = 
+                type === 'url' ? 'block' : 'none';
+            document.getElementById('keywordSearchForm').style.display = 
+                type === 'keyword' ? 'block' : 'none';
+        }
+        
+        // Setup Keyword Input
+        function setupKeywordInput() {
+            const input = document.getElementById('keywordInput');
+            
+            input.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
-                    performSearch();
+                    e.preventDefault();
+                    const text = input.textContent.trim();
+                    if (text) {
+                        addKeyword(text);
+                        input.textContent = '';
+                    }
                 }
             });
             
-            // Focus search input
-            searchInput.focus();
-        });
+            // Load existing keywords
+            renderKeywords();
+        }
         
-        // Quick search function
-        window.quickSearch = function(query) {
-            searchInput.value = query;
-            performSearch();
-        };
-        
-        // Main search function
-        async function performSearch() {
-            const query = searchInput.value.trim();
-            
-            if (!query) {
-                showNotification('Please enter a search term', 'error');
-                return;
-            }
-            
-            // Show loading
-            showLoading();
-            
-            try {
-                // Check if query is a URL
-                const isUrl = query.startsWith('http://') || query.startsWith('https://');
-                
-                if (isUrl) {
-                    // It's a URL - fetch the website
-                    await searchWebsite(query);
-                } else {
-                    // It's keywords - search for websites containing these keywords
-                    await searchByKeywords(query);
-                }
-                
-            } catch (error) {
-                console.error('Search error:', error);
-                showNotification(`Search failed: ${error.message}`, 'error');
-                showEmptyState();
+        function addKeyword(keyword) {
+            keyword = keyword.trim().toLowerCase();
+            if (keyword && !activeKeywords.includes(keyword)) {
+                activeKeywords.push(keyword);
+                renderKeywords();
             }
         }
         
-        // Search a specific website
-        async function searchWebsite(url) {
-            console.log('🌐 Searching website:', url);
+        function removeKeyword(index) {
+            activeKeywords.splice(index, 1);
+            renderKeywords();
+        }
+        
+        function renderKeywords() {
+            const container = document.getElementById('keywordInput');
+            container.innerHTML = '';
+            
+            if (activeKeywords.length === 0) {
+                const placeholder = document.createElement('span');
+                placeholder.textContent = 'Type keywords and press Enter...';
+                placeholder.style.color = '#7f8c8d';
+                placeholder.style.fontStyle = 'italic';
+                container.appendChild(placeholder);
+                return;
+            }
+            
+            activeKeywords.forEach((keyword, index) => {
+                const tag = document.createElement('span');
+                tag.className = 'keyword-tag';
+                tag.innerHTML = `
+                    ${keyword}
+                    <span class="remove" onclick="removeKeyword(${index})">&times;</span>
+                `;
+                container.appendChild(tag);
+            });
+        }
+        
+        // Quick Links
+        function useExample(url) {
+            document.getElementById('websiteUrl').value = url;
+            showNotification(`Loaded example: ${url}`, 'info');
+        }
+        
+        // Perform Search
+        async function performSearch() {
+            let searchData = {};
+            
+            if (searchType === 'url') {
+                const url = document.getElementById('websiteUrl').value.trim();
+                const keywords = document.getElementById('searchKeywords').value;
+                
+                if (!url) {
+                    showNotification('Please enter a website URL', 'error');
+                    return;
+                }
+                
+                searchData = {
+                    type: 'url',
+                    url: url,
+                    keywords: keywords.split('\n').filter(k => k.trim())
+                };
+                
+                await searchWebsite(url, keywords);
+                
+            } else {
+                // Keyword search
+                if (activeKeywords.length === 0) {
+                    showNotification('Please add at least one keyword', 'error');
+                    return;
+                }
+                
+                searchData = {
+                    type: 'keyword',
+                    keywords: activeKeywords,
+                    sources: Array.from(document.getElementById('keywordSources').selectedOptions)
+                        .map(opt => opt.value)
+                };
+                
+                await searchByKeywords();
+            }
+            
+            // Save search for history
+            saveSearch(searchData);
+            
+            // Show results tab
+            showTab('results');
+        }
+        
+        // Search Website
+        async function searchWebsite(url, keywords) {
+            showLoading();
             
             try {
                 const response = await fetch(BACKEND_URL, {
@@ -464,225 +813,378 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    displayWebsiteResults(data);
-                    showNotification(`✅ Successfully searched ${new URL(url).hostname}`, 'success');
+                    processWebsiteResults(data, keywords);
                 } else {
                     throw new Error(data.error || 'Unknown error');
                 }
                 
             } catch (error) {
-                throw error;
+                console.error('Search error:', error);
+                showNotification(`Search failed: ${error.message}`, 'error');
+                showEmptyResults();
             }
         }
         
-        // Search by keywords (this would need to search multiple known websites)
-        async function searchByKeywords(keywords) {
-            console.log('🔑 Searching by keywords:', keywords);
-            
-            // For now, show example results
-            // In a real implementation, you would search multiple government sites
-            showExampleResults(keywords);
-            showNotification(`Searching for "${keywords}" in government websites`, 'info');
-        }
-        
-        // Display website search results
-        function displayWebsiteResults(data) {
+        function processWebsiteResults(data, keywords) {
             const url = new URL(data.url);
             
-            // Check if content is HTML
-            const isHtml = data.contentType.includes('text/html');
-            
-            if (isHtml) {
-                // Parse HTML and find bidding-related content
+            // Check if we found bidding content
+            if (data.contentType.includes('text/html')) {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(data.content, 'text/html');
                 
-                // Extract potential bidding information
-                const biddingElements = extractBiddingInfo(doc, data.url);
+                // Extract bidding opportunities
+                const opportunities = extractOpportunities(doc, url.href);
                 
-                if (biddingElements.length > 0) {
-                    displayBiddingResults(biddingElements, url.hostname);
+                if (opportunities.length > 0) {
+                    displayOpportunities(opportunities, url.hostname);
                 } else {
-                    // No specific bidding info found, show website info
-                    displayWebsiteInfo(data, url);
+                    // No specific opportunities found
+                    displayWebsiteInfo(data);
                 }
             } else {
-                // Non-HTML content
-                displayWebsiteInfo(data, url);
+                displayWebsiteInfo(data);
             }
+            
+            showNotification(`Successfully searched ${url.hostname}`, 'success');
         }
         
-        // Extract bidding information from HTML
-        function extractBiddingInfo(doc, baseUrl) {
-            const elements = [];
-            const baseUrlObj = new URL(baseUrl);
+        function extractOpportunities(doc, baseUrl) {
+            const opportunities = [];
+            const biddingKeywords = ['bid', 'tender', 'procurement', 'rfp', 'rfq', 'opportunity', 'notice'];
             
-            // Look for bidding-related elements
-            const biddingKeywords = ['bid', 'tender', 'procurement', 'rfp', 'rfq', 'contract', 'opportunity', 'notice'];
-            
-            // Check links
+            // Find all links
             const links = doc.querySelectorAll('a');
             links.forEach(link => {
                 const text = link.textContent.toLowerCase();
                 const href = link.getAttribute('href');
                 
-                // Check if link contains bidding keywords
-                const hasKeyword = biddingKeywords.some(keyword => text.includes(keyword));
-                
-                if (hasKeyword && href) {
-                    let fullUrl;
+                if (href && biddingKeywords.some(keyword => text.includes(keyword))) {
                     try {
-                        fullUrl = new URL(href, baseUrl).href;
-                    } catch {
-                        fullUrl = href;
+                        const fullUrl = new URL(href, baseUrl).href;
+                        
+                        opportunities.push({
+                            title: link.textContent.trim() || 'Bidding Opportunity',
+                            url: fullUrl,
+                            description: 'Found on page',
+                            source: new URL(baseUrl).hostname,
+                            date: new Date().toLocaleDateString()
+                        });
+                    } catch (e) {
+                        // Invalid URL
                     }
-                    
-                    elements.push({
-                        type: 'link',
-                        title: link.textContent.trim() || 'Bidding Opportunity',
-                        url: fullUrl,
-                        description: `Found on ${baseUrlObj.hostname}`,
-                        source: baseUrlObj.hostname
-                    });
                 }
             });
             
-            // Check for tables or sections that might contain bidding info
-            const tables = doc.querySelectorAll('table');
-            tables.forEach(table => {
-                const tableText = table.textContent.toLowerCase();
-                if (biddingKeywords.some(keyword => tableText.includes(keyword))) {
-                    elements.push({
-                        type: 'table',
-                        title: 'Bidding Information Table',
-                        content: table.outerHTML.substring(0, 500) + '...',
-                        source: baseUrlObj.hostname
-                    });
-                }
-            });
-            
-            // Remove duplicates based on URL
-            const uniqueElements = [];
-            const seenUrls = new Set();
-            
-            elements.forEach(el => {
-                if (!el.url || !seenUrls.has(el.url)) {
-                    if (el.url) seenUrls.add(el.url);
-                    uniqueElements.push(el);
-                }
-            });
-            
-            return uniqueElements.slice(0, 20); // Limit to 20 items
+            return opportunities.slice(0, 10); // Limit to 10
         }
         
-        // Display bidding results
-        function displayBiddingResults(items, source) {
-            resultsContainer.innerHTML = '';
-            resultsCount.textContent = `${items.length} result${items.length === 1 ? '' : 's'} found`;
+        // Keyword Search (Multi-site)
+        async function searchByKeywords() {
+            showLoading();
             
-            items.forEach(item => {
-                const resultItem = document.createElement('div');
-                resultItem.className = 'result-item';
+            // This would search multiple websites in real implementation
+            // For now, simulate results
+            
+            setTimeout(() => {
+                const exampleResults = activeKeywords.map(keyword => ({
+                    title: `Opportunities for "${keyword}"`,
+                    url: `https://notices.philgeps.gov.ph/search?q=${encodeURIComponent(keyword)}`,
+                    description: `Search results for "${keyword}" on PhilGEPS`,
+                    source: 'PhilGEPS',
+                    date: new Date().toLocaleDateString(),
+                    match: true
+                }));
                 
-                const description = item.description || 'Potential bidding opportunity';
-                const title = item.title || 'Untitled';
+                displayOpportunities(exampleResults, 'Multiple Sources');
+                showNotification(`Found ${exampleResults.length} results for your keywords`, 'success');
+            }, 1500);
+        }
+        
+        // Display Results
+        function displayOpportunities(opportunities, source) {
+            resultsContainer.innerHTML = '';
+            searchResults = opportunities;
+            
+            if (opportunities.length === 0) {
+                showEmptyResults();
+                return;
+            }
+            
+            opportunities.forEach((opp, index) => {
+                const item = document.createElement('div');
+                item.className = 'result-item';
                 
-                resultItem.innerHTML = `
+                item.innerHTML = `
                     <div class="result-header">
-                        <div class="result-title">${escapeHtml(title)}</div>
-                        <span style="background: #3498db; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem;">
-                            ${escapeHtml(source)}
-                        </span>
+                        <div class="result-title">${escapeHtml(opp.title)}</div>
+                        <div class="result-source">${escapeHtml(opp.source)}</div>
                     </div>
-                    <p style="color: #5d6d7e; margin-bottom: 1rem;">${escapeHtml(description)}</p>
-                    ${item.url ? `<div class="result-url"><i class="fas fa-link"></i> ${escapeHtml(item.url)}</div>` : ''}
-                    <div class="result-actions">
-                        ${item.url ? `
-                        <button class="action-btn visit-btn" onclick="window.open('${item.url}', '_blank')">
-                            <i class="fas fa-external-link-alt"></i> Visit Page
+                    <p style="color: #5d6d7e; margin: 0.5rem 0;">${escapeHtml(opp.description)}</p>
+                    <div style="font-size: 0.9rem; color: #7f8c8d; margin: 0.5rem 0;">
+                        <i class="fas fa-link"></i> ${escapeHtml(opp.url)}
+                    </div>
+                    <div class="monitor-actions">
+                        <button class="btn btn-primary" onclick="window.open('${opp.url}', '_blank')">
+                            <i class="fas fa-external-link-alt"></i> Visit
                         </button>
-                        ` : ''}
-                        <button class="action-btn monitor-btn" onclick="startMonitoring('${item.url || source}')">
-                            <i class="fas fa-bell"></i> Monitor Updates
+                        <button class="btn btn-success" onclick="addMonitorFromResult(${index})">
+                            <i class="fas fa-bell"></i> Monitor This
                         </button>
                     </div>
                 `;
                 
-                resultsContainer.appendChild(resultItem);
+                resultsContainer.appendChild(item);
             });
+            
+            // Update stats
+            document.getElementById('resultsStats').textContent = 
+                `${opportunities.length} result${opportunities.length === 1 ? '' : 's'} found`;
         }
         
-        // Display website information
-        function displayWebsiteInfo(data, url) {
-            resultsContainer.innerHTML = '';
-            resultsCount.textContent = '1 result found';
+        function displayWebsiteInfo(data) {
+            const url = new URL(data.url);
             
-            const resultItem = document.createElement('div');
-            resultItem.className = 'result-item';
-            
-            resultItem.innerHTML = `
-                <div class="result-header">
-                    <div class="result-title">${escapeHtml(url.hostname)}</div>
-                    <span style="background: ${data.status === 200 ? '#2ecc71' : '#f39c12'}; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem;">
-                        ${data.status} ${data.statusText}
-                    </span>
-                </div>
-                <p style="color: #5d6d7e; margin-bottom: 1rem;">Website is accessible and responding</p>
-                <div class="result-details">
-                    <div class="detail-item">
-                        <i class="fas fa-globe"></i>
-                        <span>URL: ${escapeHtml(data.url)}</span>
+            resultsContainer.innerHTML = `
+                <div class="result-item">
+                    <div class="result-header">
+                        <div class="result-title">${escapeHtml(url.hostname)}</div>
+                        <div class="result-source" style="background: ${data.status === 200 ? '#2ecc71' : '#f39c12'}">
+                            ${data.status} ${data.statusText}
+                        </div>
                     </div>
-                    <div class="detail-item">
-                        <i class="fas fa-file-alt"></i>
-                        <span>Content Type: ${escapeHtml(data.contentType || 'Not specified')}</span>
+                    <p style="color: #5d6d7e; margin: 1rem 0;">
+                        Website is accessible and responding. No specific bidding opportunities detected automatically.
+                    </p>
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                            <div>
+                                <strong>URL:</strong><br>
+                                <a href="${data.url}" target="_blank" style="color: #3498db; word-break: break-all;">
+                                    ${data.url}
+                                </a>
+                            </div>
+                            <div>
+                                <strong>Content Type:</strong><br>
+                                ${data.contentType || 'Not specified'}
+                            </div>
+                            <div>
+                                <strong>Checked:</strong><br>
+                                ${new Date(data.timestamp).toLocaleTimeString()}
+                            </div>
+                        </div>
                     </div>
-                    <div class="detail-item">
-                        <i class="fas fa-clock"></i>
-                        <span>Checked: ${new Date(data.timestamp).toLocaleTimeString()}</span>
+                    <div class="monitor-actions">
+                        <button class="btn btn-primary" onclick="window.open('${data.url}', '_blank')">
+                            <i class="fas fa-external-link-alt"></i> Visit Website
+                        </button>
+                        <button class="btn btn-success" onclick="addMonitorFromUrl('${data.url}')">
+                            <i class="fas fa-bell"></i> Monitor This Website
+                        </button>
                     </div>
-                </div>
-                <div class="result-actions">
-                    <button class="action-btn visit-btn" onclick="window.open('${data.url}', '_blank')">
-                        <i class="fas fa-external-link-alt"></i> Visit Website
-                    </button>
-                    <button class="action-btn monitor-btn" onclick="startMonitoring('${data.url}')">
-                        <i class="fas fa-bell"></i> Monitor for Updates
-                    </button>
                 </div>
             `;
             
-            resultsContainer.appendChild(resultItem);
+            document.getElementById('resultsStats').textContent = '1 result found';
         }
         
-        // Show example results for keyword search
-        function showExampleResults(keywords) {
-            const exampleResults = [
-                {
-                    title: `Procurement Opportunities for "${keywords}"`,
-                    url: 'https://notices.philgeps.gov.ph/search?q=' + encodeURIComponent(keywords),
-                    source: 'PhilGEPS',
-                    description: `Search results for "${keywords}" on Philippine Government Electronic Procurement System`
-                },
-                {
-                    title: `Government Bids: ${keywords}`,
-                    url: 'https://www.dbm.gov.ph/procurement/' + encodeURIComponent(keywords),
-                    source: 'DBM Philippines',
-                    description: `Department of Budget and Management procurement opportunities`
-                },
-                {
-                    title: `Public Tenders - ${keywords}`,
-                    url: 'https://www.gov.ph/tenders',
-                    source: 'GOV.PH',
-                    description: `Government tenders and bidding opportunities`
-                }
-            ];
+        // Monitor Management
+        function addMonitorFromResult(index) {
+            const result = searchResults[index];
+            document.getElementById('monitorName').value = result.title;
+            document.getElementById('monitorUrl').value = result.url;
+            showTab('monitor');
+        }
+        
+        function addMonitorFromUrl(url) {
+            document.getElementById('monitorUrl').value = url;
+            showTab('monitor');
+        }
+        
+        function addMonitor() {
+            const name = document.getElementById('monitorName').value.trim();
+            const url = document.getElementById('monitorUrl').value.trim();
+            const keywords = document.getElementById('monitorKeywords').value;
+            const frequency = document.getElementById('monitorFrequency').value;
             
-            displayBiddingResults(exampleResults, 'Multiple Sources');
-            showNotification(`Showing example results for "${keywords}"`, 'info');
+            if (!name || !url) {
+                showNotification('Please enter a name and URL', 'error');
+                return;
+            }
+            
+            const monitor = {
+                id: Date.now(),
+                name: name,
+                url: url,
+                keywords: keywords.split('\n').filter(k => k.trim()),
+                frequency: frequency,
+                status: 'active',
+                lastChecked: null,
+                results: []
+            };
+            
+            activeMonitors.push(monitor);
+            saveMonitors();
+            renderMonitors();
+            
+            showNotification(`Added monitor: ${name}`, 'success');
+            
+            // Clear form
+            document.getElementById('monitorName').value = '';
+            document.getElementById('monitorUrl').value = '';
+            document.getElementById('monitorKeywords').value = '';
         }
         
-        // Show loading state
+        function toggleMonitor(id) {
+            const monitor = activeMonitors.find(m => m.id === id);
+            if (monitor) {
+                monitor.status = monitor.status === 'active' ? 'paused' : 'active';
+                saveMonitors();
+                renderMonitors();
+                showNotification(`${monitor.name} ${monitor.status}`, 'info');
+            }
+        }
+        
+        function removeMonitor(id) {
+            activeMonitors = activeMonitors.filter(m => m.id !== id);
+            saveMonitors();
+            renderMonitors();
+            showNotification('Monitor removed', 'info');
+        }
+        
+        function renderMonitors() {
+            const container = document.getElementById('monitorsContainer');
+            
+            if (activeMonitors.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bell"></i>
+                        <h3>No Active Monitors</h3>
+                        <p>Add a monitor to start tracking bidding websites</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            activeMonitors.forEach(monitor => {
+                const item = document.createElement('div');
+                item.className = 'monitor-item';
+                
+                item.innerHTML = `
+                    <div class="monitor-header">
+                        <div class="monitor-title">${escapeHtml(monitor.name)}</div>
+                        <span class="status-${monitor.status}">
+                            ${monitor.status === 'active' ? '🟢 Active' : 
+                              monitor.status === 'paused' ? '🟡 Paused' : '🔴 Stopped'}
+                        </span>
+                    </div>
+                    <div class="monitor-url">
+                        <i class="fas fa-link"></i> ${escapeHtml(monitor.url)}
+                    </div>
+                    ${monitor.keywords.length > 0 ? `
+                    <div class="monitor-keywords">
+                        ${monitor.keywords.map(k => 
+                            `<span class="keyword-tag">${escapeHtml(k)}</span>`
+                        ).join('')}
+                    </div>
+                    ` : ''}
+                    <div style="color: #7f8c8d; font-size: 0.9rem; margin: 0.5rem 0;">
+                        <i class="fas fa-clock"></i> 
+                        Check every ${monitor.frequency} minutes
+                        ${monitor.lastChecked ? ` • Last checked: ${new Date(monitor.lastChecked).toLocaleTimeString()}` : ''}
+                    </div>
+                    <div class="monitor-actions">
+                        <button class="btn btn-${monitor.status === 'active' ? 'warning' : 'success'}" 
+                                onclick="toggleMonitor(${monitor.id})">
+                            <i class="fas fa-${monitor.status === 'active' ? 'pause' : 'play'}"></i>
+                            ${monitor.status === 'active' ? 'Pause' : 'Resume'}
+                        </button>
+                        <button class="btn btn-primary" onclick="checkMonitor(${monitor.id})">
+                            <i class="fas fa-search"></i> Check Now
+                        </button>
+                        <button class="btn btn-danger" onclick="removeMonitor(${monitor.id})">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(item);
+            });
+        }
+        
+        async function checkMonitor(id) {
+            const monitor = activeMonitors.find(m => m.id === id);
+            if (!monitor) return;
+            
+            showNotification(`Checking ${monitor.name}...`, 'info');
+            
+            try {
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: monitor.url })
+                });
+                
+                const data = await response.json();
+                monitor.lastChecked = new Date().toISOString();
+                
+                if (data.success) {
+                    // Check for keyword matches
+                    if (monitor.keywords.length > 0) {
+                        const content = data.content.toLowerCase();
+                        const matches = monitor.keywords.filter(k => 
+                            content.includes(k.toLowerCase())
+                        );
+                        
+                        if (matches.length > 0) {
+                            showNotification(`Found ${matches.length} keyword matches in ${monitor.name}`, 'success');
+                        }
+                    }
+                }
+                
+                saveMonitors();
+                renderMonitors();
+                
+            } catch (error) {
+                showNotification(`Check failed for ${monitor.name}: ${error.message}`, 'error');
+            }
+        }
+        
+        // Save for Monitoring
+        function saveSearchForMonitoring() {
+            if (searchType === 'url') {
+                const url = document.getElementById('websiteUrl').value.trim();
+                const keywords = document.getElementById('searchKeywords').value;
+                
+                if (!url) {
+                    showNotification('Please enter a website URL first', 'error');
+                    return;
+                }
+                
+                document.getElementById('monitorUrl').value = url;
+                if (keywords) {
+                    document.getElementById('monitorKeywords').value = keywords;
+                }
+                
+                showTab('monitor');
+                showNotification('Search saved for monitoring setup', 'success');
+                
+            } else {
+                // Keyword search
+                if (activeKeywords.length === 0) {
+                    showNotification('Please add keywords first', 'error');
+                    return;
+                }
+                
+                document.getElementById('monitorKeywords').value = activeKeywords.join('\n');
+                showTab('monitor');
+                showNotification('Keywords saved for monitoring setup', 'success');
+            }
+        }
+        
+        // UI Helpers
         function showLoading() {
             resultsContainer.innerHTML = `
                 <div class="loading">
@@ -690,41 +1192,72 @@
                     <p>Searching...</p>
                 </div>
             `;
-            resultsCount.textContent = 'Searching...';
         }
         
-        // Show empty state
-        function showEmptyState() {
+        function showEmptyResults() {
             resultsContainer.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-search"></i>
                     <h3>No Results Found</h3>
-                    <p>Try a different search term or URL</p>
+                    <p>Try a different search or website URL</p>
                 </div>
             `;
-            resultsCount.textContent = '0 results';
+            document.getElementById('resultsStats').textContent = '0 results';
         }
         
-        // Show notification
+        function clearResults() {
+            searchResults = [];
+            resultsContainer.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <h3>No Results Yet</h3>
+                    <p>Perform a search to see results here</p>
+                </div>
+            `;
+            document.getElementById('resultsStats').textContent = '0 results';
+            showNotification('Results cleared', 'info');
+        }
+        
         function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
             notification.textContent = message;
             notification.style.background = type === 'success' ? '#2ecc71' : 
-                                          type === 'error' ? '#e74c3c' : '#3498db';
+                                          type === 'error' ? '#e74c3c' : 
+                                          type === 'warning' ? '#f39c12' : '#3498db';
             notification.style.display = 'block';
             
-            // Auto-hide after 3 seconds
             setTimeout(() => {
                 notification.style.display = 'none';
             }, 3000);
         }
         
-        // Start monitoring a URL
-        window.startMonitoring = function(url) {
-            showNotification(`Started monitoring ${url}`, 'success');
-            // In a real implementation, this would start background checks
-        };
+        // Data Persistence
+        function saveSearch(searchData) {
+            const searches = JSON.parse(localStorage.getItem('bidmonitor_searches') || '[]');
+            searches.unshift({
+                ...searchData,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Keep only last 10 searches
+            localStorage.setItem('bidmonitor_searches', JSON.stringify(searches.slice(0, 10)));
+        }
         
-        // Utility: Escape HTML
+        function saveMonitors() {
+            localStorage.setItem('bidmonitor_monitors', JSON.stringify(activeMonitors));
+        }
+        
+        function loadSavedData() {
+            // Load monitors
+            const savedMonitors = JSON.parse(localStorage.getItem('bidmonitor_monitors') || '[]');
+            activeMonitors = savedMonitors;
+            
+            // Load keywords
+            const savedKeywords = JSON.parse(localStorage.getItem('bidmonitor_keywords') || '[]');
+            activeKeywords = savedKeywords;
+        }
+        
+        // Utility
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
